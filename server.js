@@ -3,6 +3,7 @@ import express from "express";
 import apiRouter from "./api";
 import sassMiddleware from "node-sass-middleware";
 import path from "path";
+import serverRender from "./serverRender";
 
 const server = express();
 
@@ -15,7 +16,16 @@ server.use(
 
 server.set("view engine", "ejs");
 server.get("/", (req, res) => {
-  res.render("indexn", { content: "Hello Express and EJS" });
+  serverRender()
+    .then(({ initialMarkup, initialData }) => {
+      res.render("index", {
+        initialMarkup,
+        initialData,
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 });
 
 server.use("/api", apiRouter);
